@@ -17,9 +17,30 @@ void initialize_job(Job *job, int id, int arrival,
 
 void display_job(Job job)
 {
+    const char *status;
+
+    switch (job.status)
+    {
+        case WAITING:
+            status = "Waiting";
+            break;
+
+        case RUNNING:
+            status = "Running";
+            break;
+
+        case COMPLETED:
+            status = "Completed";
+            break;
+
+        default:
+            status = "Unknown";
+    }
+
     printf("Job ID: J%d\n", job.job_id);
     printf("Arrival Time: %d\n", job.arrival_time);
     printf("Burst Time: %d\n", job.burst_time);
     printf("Priority: %d\n", job.priority);
-    printf("Status: %d\n", job.status);
+    printf("Remaining Time: %d\n", job.remaining_time);
+    printf("Status: %s\n", status);
 }
