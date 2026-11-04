@@ -273,3 +273,30 @@ void priority_scheduling(Job jobs[], int n)
     printf("\nAverage Turnaround Time: %.2f\n",
            total_turnaround_time / n);
 }
+
+
+
+SchedulingMetrics calculate_metrics(Job jobs[], int n)
+{
+    SchedulingMetrics metrics;
+
+    float total_waiting_time = 0;
+    float total_turnaround_time = 0;
+
+    for (int i = 0; i < n; i++)
+    {
+        int turnaround_time =
+            jobs[i].completion_time - jobs[i].arrival_time;
+
+        int waiting_time =
+            turnaround_time - jobs[i].burst_time;
+
+        total_waiting_time += waiting_time;
+        total_turnaround_time += turnaround_time;
+    }
+
+    metrics.average_waiting_time = total_waiting_time / n;
+    metrics.average_turnaround_time = total_turnaround_time / n;
+
+    return metrics;
+}

@@ -91,32 +91,107 @@ int main()
                        arrival, burst, priority);   
     }
 
-    // Store original jobs for later display (testing purposes only)
-    Job original_jobs[MAX_JOBS];
-    for (int i = 0; i < n; i++)
+    int choice;
+
+    do
     {
-        original_jobs[i] = jobs[i];
-    }
+        printf("\n===== CAMPUSCOMPUTE MENU =====\n");
+        printf("1. FCFS Scheduling\n");
+        printf("2. Round Robin Scheduling\n");
+        printf("3. Priority Scheduling\n");
+        printf("4. Compare All Algorithms\n");
+        printf("5. Exit\n");
 
+        choice = read_integer("\nEnter your choice: ");
 
+        Job fcfs_jobs[MAX_JOBS];
+        Job rr_jobs[MAX_JOBS];
+        Job priority_jobs[MAX_JOBS];
 
+        // Create fresh copies
+        for (int i = 0; i < n; i++)
+        {
+            fcfs_jobs[i] = jobs[i];
+            rr_jobs[i] = jobs[i];
+            priority_jobs[i] = jobs[i];
+        }
 
-    fcfs_scheduling(jobs, n);   // -------------------------> scheduling for first come first serve
+        switch (choice)
+        {
+            case 1:
+                fcfs_scheduling(fcfs_jobs, n);
+                break;
 
-    round_robin_scheduling(original_jobs, n, 2);    // -----> scheduling for round robin with quantum = 2
+            case 2:
+            {
+                int quantum;
 
-    priority_scheduling(original_jobs, n);  // -------------> scheduling for priority scheduling
+                do
+                {
+                    quantum = read_integer("Enter Time Quantum: ");
 
+                    if (quantum <= 0)
+                        printf("Time Quantum must be positive.\n");
 
+                } while (quantum <= 0);
 
+                round_robin_scheduling(rr_jobs, n, quantum);
+                break;
+            }
 
-    printf("\n===== JOB DETAILS =====\n");
+            case 3:
+                priority_scheduling(priority_jobs, n);
+                break;
 
-    for (int i = 0; i < n; i++)
-    {
-        display_job(jobs[i]);
-        printf("----------------------\n");
-    }
+            case 4:
+            {
+                fcfs_scheduling(fcfs_jobs, n);
+                round_robin_scheduling(rr_jobs, n, 2);
+                priority_scheduling(priority_jobs, n);
+
+                SchedulingMetrics fcfs_metrics =
+                    calculate_metrics(fcfs_jobs, n);
+
+                SchedulingMetrics rr_metrics =
+                    calculate_metrics(rr_jobs, n);
+
+                SchedulingMetrics priority_metrics =
+                    calculate_metrics(priority_jobs, n);
+
+                printf("\n========== SCHEDULING COMPARISON ==========\n");
+
+                printf("%-20s %-20s %-20s\n",
+                       "Algorithm", "Avg Waiting", "Avg Turnaround");
+
+                printf("------------------------------------------------------------\n");
+
+                printf("%-20s %-20.2f %-20.2f\n",
+                       "FCFS",
+                       fcfs_metrics.average_waiting_time,
+                       fcfs_metrics.average_turnaround_time);
+
+                printf("%-20s %-20.2f %-20.2f\n",
+                       "Round Robin",
+                       rr_metrics.average_waiting_time,
+                       rr_metrics.average_turnaround_time);
+
+                printf("%-20s %-20.2f %-20.2f\n",
+                       "Priority",
+                       priority_metrics.average_waiting_time,
+                       priority_metrics.average_turnaround_time);
+
+                break;
+            }
+
+            case 5:
+                printf("\nExiting CampusCompute. Goodbye!\n");
+                break;
+
+            default:
+                printf("\nInvalid choice! Please select 1-5.\n");
+        }
+
+    } while (choice != 5);
 
     return 0;
 }
