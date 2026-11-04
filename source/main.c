@@ -103,6 +103,12 @@ int main()
 
     fcfs_scheduling(jobs, n);   // -------------------------> scheduling for first come first serve
 
+    round_robin_scheduling(original_jobs, n, 2);    // -----> scheduling for round robin with quantum = 2
+
+
+
+
+
     printf("\n===== JOB DETAILS =====\n");
 
     for (int i = 0; i < n; i++)
