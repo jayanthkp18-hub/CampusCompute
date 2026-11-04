@@ -3,7 +3,9 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <limits.h>
+
 #include "job.h"
+#include "scheduler.h"
 
 int read_integer(const char *message)
 {
@@ -86,8 +88,20 @@ int main()
         } while (priority <= 0);
 
         initialize_job(&jobs[i], i + 1,
-                       arrival, burst, priority);
+                       arrival, burst, priority);   
     }
+
+    // Store original jobs for later display (testing purposes only)
+    Job original_jobs[MAX_JOBS];
+    for (int i = 0; i < n; i++)
+    {
+        original_jobs[i] = jobs[i];
+    }
+
+
+
+
+    fcfs_scheduling(jobs, n);   // -------------------------> scheduling for first come first serve
 
     printf("\n===== JOB DETAILS =====\n");
 
