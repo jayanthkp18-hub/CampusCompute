@@ -58,3 +58,9 @@ void fcfs_scheduling(Job jobs[], int n)
     printf("\nAverage Turnaround Time: %.2f\n",
            total_turnaround_time / n);
 }
+
+void round_robin_scheduling(Job jobs[], int n, int quantum)
+{
+    // Round Robin implementation madbeku
+
+}
