@@ -182,3 +182,94 @@ void round_robin_scheduling(Job jobs[], int n, int quantum)
     printf("\nAverage Turnaround Time: %.2f\n",
            total_turnaround_time / n);
 }
+
+
+
+
+
+/*
+implementing Non-preemptive Priority Scheduling:
+- Smaller priority number = higher priority.
+- Once a job starts, it runs until completion.
+- If two jobs have the same priority, the one that arrived first executes first.
+*/
+
+void priority_scheduling(Job jobs[], int n)
+{
+    int current_time = 0;
+    int completed = 0;
+
+    float total_waiting_time = 0;
+    float total_turnaround_time = 0;
+
+    // Reset job details
+    for (int i = 0; i < n; i++)
+    {
+        jobs[i].remaining_time = jobs[i].burst_time;
+        jobs[i].completion_time = 0;
+        jobs[i].status = WAITING;
+    }
+
+    printf("\n===== PRIORITY SCHEDULING =====\n");
+
+    while (completed < n)
+    {
+        int selected = -1;
+
+        // Find the highest-priority arrived job
+        for (int i = 0; i < n; i++)
+        {
+            if (jobs[i].status != COMPLETED &&
+                jobs[i].arrival_time <= current_time)
+            {
+                if (selected == -1 ||
+                    jobs[i].priority < jobs[selected].priority ||
+                    (jobs[i].priority == jobs[selected].priority &&
+                     jobs[i].arrival_time < jobs[selected].arrival_time))
+                {
+                    selected = i;
+                }
+            }
+        }
+
+        // If no job has arrived, advance time
+        if (selected == -1)
+        {
+            current_time++;
+            continue;
+        }
+
+        // Execute selected job
+        jobs[selected].status = RUNNING;
+
+        int waiting_time =
+            current_time - jobs[selected].arrival_time;
+
+        current_time += jobs[selected].burst_time;
+
+        jobs[selected].remaining_time = 0;
+        jobs[selected].completion_time = current_time;
+        jobs[selected].status = COMPLETED;
+
+        int turnaround_time =
+            current_time - jobs[selected].arrival_time;
+
+        total_waiting_time += waiting_time;
+        total_turnaround_time += turnaround_time;
+
+        completed++;
+
+        printf("Job %d | Priority: %d | Completion: %d | Waiting: %d | Turnaround: %d\n",
+               jobs[selected].job_id,
+               jobs[selected].priority,
+               current_time,
+               waiting_time,
+               turnaround_time);
+    }
+
+    printf("\nAverage Waiting Time: %.2f",
+           total_waiting_time / n);
+
+    printf("\nAverage Turnaround Time: %.2f\n",
+           total_turnaround_time / n);
+}

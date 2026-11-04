@@ -105,6 +105,7 @@ int main()
 
     round_robin_scheduling(original_jobs, n, 2);    // -----> scheduling for round robin with quantum = 2
 
+    priority_scheduling(original_jobs, n);  // -------------> scheduling for priority scheduling
 
 
 
