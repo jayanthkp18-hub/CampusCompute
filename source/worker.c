@@ -18,7 +18,7 @@ void worker_run(int simulate_failure)
 
     if (pid < 0)
     {
-        perror("fork failed");
+        perror("fork failed"):
         return;
     }
 

@@ -10,3 +10,4 @@
 void worker_run(int simulate_failure);
 
 #endif
+
