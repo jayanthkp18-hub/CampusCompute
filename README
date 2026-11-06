@@ -1,211 +1,142 @@
-## 3.6 Process Resource Limits
+# CampusCompute
+### Intelligent Job Scheduling and Resource Management
 
-This module demonstrates process resource management using the POSIX `setrlimit()` system call.
+A Linux-based Operating System project developed in C to demonstrate process management, CPU scheduling, synchronization, inter-process communication, deadlock avoidance, and resource management through an interactive command-line application.
 
-It illustrates how an operating system can impose restrictions on the resources available to a process and control resource consumption.
+---
 
-## 4. Technologies and Concepts Used
+## Overview
 
-### 4.1 Development Environment
+CampusCompute is designed to demonstrate how an operating system manages processes and system resources. It brings together multiple Operating System concepts in a single modular application.
 
-- Programming Language: C
-- Operating System: Linux / Ubuntu
-- Compiler: GCC (GNU Compiler Collection)
-- Build System: GNU Make
+The application provides an interactive interface through which users can execute different operations and observe their behaviour.
 
-### 4.2 Operating System Concepts
+## Key Features
 
-**Process Management**
-- Process creation using `fork()`.
-- Child process synchronization and termination handling using `waitpid()`.
+- **CPU Scheduling:** FCFS, Round Robin, and Priority Scheduling with performance metrics.
+- **Deadlock Avoidance:** Banker's Algorithm with safe-state detection and safe-sequence generation.
+- **Process Management:** Worker process creation, execution, termination, and controlled failure handling.
+- **Resource Management:** Process resource restrictions using POSIX `setrlimit()`.
+- **Concurrent Logging:** Multithreaded producer-consumer logging using POSIX threads.
+- **Inter-Process Communication:** Shared memory and named semaphores for process communication and synchronization.
 
-**CPU Scheduling**
-- First Come First Serve (FCFS).
-- Round Robin (RR).
-- Priority Scheduling.
+## Technologies Used
 
-**Thread Management and Synchronization**
-- POSIX Threads (Pthreads).
-- Mutex Locks.
-- Condition Variables.
-- Producer-Consumer Synchronization.
+**Programming Language:** C
 
-**Inter-Process Communication (IPC)**
-- POSIX Shared Memory.
-- POSIX Named Semaphores.
-- Parent-Child Process Communication.
+**Operating System:** Linux / Ubuntu
 
-**Deadlock Avoidance**
-- Banker's Algorithm.
-- Safe-State Detection.
-- Safe Sequence Calculation.
+**Compiler:** GCC
 
-**Resource Management**
-- POSIX `setrlimit()` system call.
-- Process Resource Restrictions.
+**Build System:** GNU Make
 
-### 4.3 System Calls and POSIX Interfaces
+**System Interfaces:** POSIX APIs and Linux system calls
 
-The project uses the following system calls and POSIX interfaces:
+**Core Concepts:** Process Management, CPU Scheduling, Multithreading, Synchronization, IPC, Deadlock Avoidance, and Resource Management.
 
-- `fork()` – Creates a child process.
-- `waitpid()` – Waits for a child process to terminate.
-- `pthread_create()` – Creates a new thread.
-- `pthread_mutex_lock()` – Acquires a mutex lock.
-- `pthread_cond_wait()` – Waits on a condition variable.
-- `shm_open()` – Creates or opens a shared memory object.
-- `ftruncate()` – Sets the size of a shared memory object.
-- `mmap()` – Maps shared memory into a process address space.
-- `sem_open()` – Creates or opens a named semaphore.
-- `sem_wait()` – Decrements or waits on a semaphore.
-- `sem_post()` – Increments a semaphore.
-- `setrlimit()` – Sets process resource limits.
+## Project Architecture
 
-## 5. System Requirements
+The application follows a modular design, with each module implementing a specific Operating System functionality.
 
-**Hardware Requirements**
-- A computer capable of running Linux or an Ubuntu virtual machine.
+- `main.c` – Main application entry point and menu-driven interface.
+- `job.c` and `job.h` – Job creation, initialization, and management.
+- `scheduler.c` and `scheduler.h` – CPU scheduling algorithms and performance metrics.
+- `banker.c` and `banker.h` – Banker's Algorithm and safe-state detection.
+- `worker.c` and `worker.h` – Worker process creation and failure handling.
+- `resource_limits.c` and `resource_limits.h` – Process resource limit management.
+- `logger.c` and `logger.h` – Concurrent activity logging and thread synchronization.
+- `ipc.c` and `ipc.h` – Inter-process communication using shared memory and semaphores.
+
+## System Requirements
+
+**Hardware**
+- A computer capable of running Linux or Ubuntu.
 - At least 2 GB RAM recommended.
-- Sufficient storage for project files and generated logs.
+- Sufficient disk space for the project and generated files.
 
-**Software Requirements**
-- Ubuntu 24.04 or another compatible Linux distribution.
+**Software**
+- Ubuntu 24.04 or a compatible Linux distribution.
 - GCC compiler.
 - GNU Make.
 - POSIX-compatible environment.
-- Terminal or command-line interface.
 
-**Installing Required Packages**
+## Installation and Setup
 
-Install the development tools using Ubuntu's package manager:
+Install the required development tools:
 
-sudo apt update
-
-sudo apt install build-essential gcc make
+    sudo apt update
+    sudo apt install build-essential gcc make
 
 Verify the installation:
 
-gcc --version
+    gcc --version
+    make --version
 
-make --version
+Clone the repository:
 
-## 6. Project Directory Structure
+    git clone <repository-url>
 
-CampusCompute/
-|
-|-- source/
-|   |-- main.c
-|   |-- job.c
-|   |-- job.h
-|   |-- scheduler.c
-|   |-- scheduler.h
-|   |-- banker.c
-|   |-- banker.h
-|   |-- worker.c
-|   |-- worker.h
-|   |-- resource_limits.c
-|   |-- resource_limits.h
-|   |-- logger.c
-|   |-- logger.h
-|   |-- ipc.c
-|   |-- ipc.h
-|
-|-- Makefile
-|-- README.md
-|-- screenshots/
-|-- report/
+Navigate to the project directory:
 
-**Directory Description**
+    cd CampusCompute
 
-- source/ – Contains all C source files and their corresponding header files.
-- Makefile – Contains compilation and linking instructions.
-- README.md – Contains project documentation and usage instructions.
-- screenshots/ – Stores screenshots of project execution.
-- report/ – Stores submission documentation, if required.
+## Compilation
 
-## 7. Compilation and Execution
+The project uses GNU Make to automate compilation and linking.
 
-CampusCompute uses GNU Make to automate the compilation and linking process.
+Run the following command from the project root directory:
 
-**Step 1: Navigate to the Project Directory**
+    make
 
-Open the Ubuntu terminal and navigate to the CampusCompute directory.
+**Compilation Workflow**
 
-cd ~/OS_Project/CampusCompute
-
-**Step 2: Compile the Project**
-
-Run the following command:
-
-make
-
-The Makefile performs the following operations:
-
-- Compiles individual C source files into object files.
-- Uses GCC with the required compiler flags.
-- Links all object files together.
-- Links the POSIX thread library.
-- Generates the final executable named campuscompute.
-
-**Compilation Flow**
-
-C Source Files (.c)
-        |
-        v
+C Source Files
+      |
+      v
 GCC Compilation
-        |
-        v
+      |
+      v
 Object Files (.o)
-        |
-        v
+      |
+      v
 Linking using Makefile
-        |
-        v
+      |
+      v
 campuscompute Executable
 
-**Step 3: Execute the Application**
+## Execution
 
-Run the generated executable:
+After successful compilation, run:
 
-./campuscompute
+    ./campuscompute
 
-The application displays an interactive command-line menu through which users can select and execute different Operating System functionalities.
+The application displays an interactive menu through which users can select the required functionality.
 
-**Execution Flow**
+**Application Workflow**
 
 Launch Application
-        |
-        v
+      |
+      v
 Display Main Menu
-        |
-        v
-Select Required Operation
-        |
-        v
-Execute Selected OS Module
-        |
-        v
+      |
+      v
+Select Functionality
+      |
+      v
+Execute Selected Module
+      |
+      v
 Display Results
-        |
-        v
+      |
+      v
 Return to Main Menu
 
-**Step 4: Clean Generated Files**
-
-To remove generated object files and the executable, run:
-
-make clean
-
-This removes the compiled object files and the campuscompute executable without affecting the original source and header files.
-
-## 8. Application Functionalities
-
-The application provides the following menu options:
+## Available Operations
 
 1. FCFS Scheduling
 2. Round Robin Scheduling
 3. Priority Scheduling
-4. Compare All Scheduling Algorithms
+4. Compare Scheduling Algorithms
 5. Banker's Algorithm
 6. Worker Process – Normal Execution
 7. Worker Process – Simulate Failure
@@ -214,52 +145,45 @@ The application provides the following menu options:
 10. IPC – Shared Memory and Semaphore
 11. Exit
 
-Users can select an option and provide the required inputs to execute the corresponding functionality.
+The scheduling comparison uses a fixed Round Robin time quantum of 2 time units.
 
-## 9. Testing and Verification
+## Cleaning Build Files
 
-The following functionalities will be verified during final project execution:
+To remove generated object files and the executable:
+    
+    make clean
 
-- CPU scheduling algorithms and scheduling metrics.
+This does not delete the original source or header files.
+
+## Testing and Verification
+
+The following functionalities are intended to be verified during final execution:
+
+- Correct execution of all CPU scheduling algorithms.
+- Accurate calculation of waiting and turnaround times.
 - Safe and unsafe states using the Banker's Algorithm.
 - Normal and controlled worker process execution.
-- Process resource limit demonstration.
-- Concurrent activity logging and thread synchronization.
+- Process resource limit enforcement.
+- Concurrent logging and thread synchronization.
 - Parent-child communication using shared memory and semaphores.
-- Proper resource cleanup and application termination.
+- Proper cleanup of processes and IPC resources.
 
-## 10. Learning Outcomes
+## Learning Outcomes
 
-Through this project, the following Operating System concepts are demonstrated:
+This project provides practical experience with:
 
-- Process creation, execution, and termination.
+- Linux process management and system calls.
 - CPU scheduling and performance evaluation.
 - Multithreading and concurrent execution.
 - Mutual exclusion and synchronization.
 - Inter-process communication.
-- Deadlock avoidance and safe-state detection.
+- Deadlock avoidance.
 - Process failure handling.
-- Resource allocation and management.
-- Practical usage of Linux system calls and POSIX interfaces.
+- Operating System resource management.
 
-## 11. Project Implementation
+## Conclusion
 
-CampusCompute is implemented using a modular architecture, with each module responsible for a specific Operating System functionality.
+CampusCompute demonstrates essential Operating System mechanisms through a modular C application. By integrating process scheduling, synchronization, IPC, deadlock avoidance, and resource management, the project provides a practical understanding of how operating systems coordinate processes and allocate system resources.
 
-The project is organized into the following components:
+---
 
-- **Job Management and CPU Scheduling:** Handles job creation, management, execution order, and scheduling performance metrics.
-- **Banker's Algorithm:** Implements resource allocation safety checks and safe-sequence detection.
-- **Worker Process Management:** Demonstrates process creation, normal execution, termination, and controlled failure handling.
-- **Process Resource Management:** Demonstrates the use of resource limits to control process resource consumption.
-- **Concurrent Activity Logger:** Implements multithreaded logging using POSIX threads, bounded queues, mutex locks, and condition variables.
-- **Inter-Process Communication:** Enables communication and synchronization between processes using POSIX shared memory and named semaphores.
-- **Command-Line Interface:** Provides a menu-driven interface to access and execute the different project functionalities.
-
-The modular design improves code organization, maintainability, and integration while allowing individual Operating System concepts to be demonstrated independently.
-
-## 12. Conclusion
-
-CampusCompute provides a practical demonstration of essential Operating System concepts through a modular C-based command-line application.
-
-By combining CPU scheduling, process management, synchronization, inter-process communication, deadlock avoidance, and resource management, the project illustrates how different operating system mechanisms work together to manage processes and system resources efficiently.
