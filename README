@@ -1,371 +1,265 @@
-# CampusCompute
-### Intelligent Job Scheduling and Resource Management
+## 3.6 Process Resource Limits
 
-## 1. Project Overview
+This module demonstrates process resource management using the POSIX `setrlimit()` system call.
 
-CampusCompute is a Linux-based command-line application developed in C to demonstrate important Operating System concepts through practical implementation.
-
-The project focuses on process management, CPU scheduling, inter-process communication, synchronization, resource allocation, and process failure handling.
-
-It provides an interactive menu through which users can execute different OS operations and observe how operating system mechanisms work.
-
-The project combines theoretical OS concepts with practical implementations using POSIX system calls, process creation, threads, synchronization primitives, and resource management techniques.
-
-## 2. Project Objectives
-
-The main objectives of CampusCompute are:
-
-- To implement and compare different CPU scheduling algorithms.
-- To demonstrate process creation and termination.
-- To implement concurrent activity logging using POSIX threads.
-- To demonstrate Inter-Process Communication (IPC).
-- To implement the Banker's Algorithm for deadlock avoidance.
-- To demonstrate worker process failure handling.
-- To understand and demonstrate process resource limits.
-- To provide an interactive command-line interface for executing OS operations.
-
-## 3. Features and Functionalities
-
-### 3.1 Job Management and CPU Scheduling
-
-Implements job management and the following CPU scheduling algorithms:
-
-- **First Come First Serve (FCFS):** Jobs are executed in order of arrival.
-- **Round Robin (RR):** Each job receives a fixed time quantum in a cyclic order.
-- **Priority Scheduling:** Jobs are scheduled based on their priority.
-
-The application calculates and displays scheduling metrics such as:
-
-- Waiting Time
-- Turnaround Time
-- Completion Time
-- Average Waiting Time
-- Average Turnaround Time
-
-The comparison option uses a fixed Round Robin time quantum of 2 time units.
-
-### 3.2 Banker's Algorithm
-
-Implements the Banker's Algorithm to determine whether the current system state is safe or unsafe.
-
-The implementation uses:
-
-- Available Resource Vector
-- Allocation Matrix
-- Maximum Resource Matrix
-- Need Matrix
-
-The Need matrix is calculated as:
-
-**Need = Maximum − Allocation**
-
-The algorithm checks whether all processes can complete execution without causing an unsafe resource allocation state. If the system is safe, it displays a safe sequence.
-
-### 3.3 Worker Process Management and Failure Handling
-
-Demonstrates process creation and management using POSIX process-related system calls.
-
-Features include:
-
-- Creating child processes using `fork()`.
-- Monitoring child process termination using `waitpid()`.
-- Demonstrating normal worker process execution.
-- Simulating controlled worker process failure.
-
-### 3.4 Concurrent Activity Logger
-
-Implements a concurrent logging mechanism using POSIX threads.
-
-Features include:
-
-- Producer-consumer architecture.
-- Bounded shared queue.
-- Multiple threads for concurrent operations.
-- Mutex locks for mutual exclusion.
-- Condition variables for thread synchronization.
-- Logging activity into a file.
-- Controlled thread termination.
-
-### 3.5 Inter-Process Communication (IPC)
-
-Demonstrates communication between parent and child processes using POSIX IPC mechanisms.
-
-The implementation uses:
-
-- POSIX Shared Memory (`shm_open`, `ftruncate`, and `mmap`).
-- Named POSIX Semaphores (`sem_open`, `sem_wait`, and `sem_post`).
-- Parent-child process synchronization.
-- Resource cleanup after communication.
-
-### 3.6 Process Resource Limits
-
-Demonstrates process resource management using the POSIX `setrlimit()` system call.
-
-This functionality shows how operating systems can impose limits on resources available to a process.
+It illustrates how an operating system can impose restrictions on the resources available to a process and control resource consumption.
 
 ## 4. Technologies and Concepts Used
 
-| Category | Technology / Concept |
-|---|---|
-| Programming Language | C |
-| Operating System | Linux / Ubuntu |
-| Compiler | GCC |
-| Build Tool | GNU Make |
-| Process Management | `fork()`, `waitpid()` |
-| Thread Management | POSIX Threads (Pthreads) |
-| Synchronization | Mutexes and Condition Variables |
-| Inter-Process Communication | POSIX Shared Memory |
-| Process Synchronization | POSIX Named Semaphores |
-| Resource Management | `setrlimit()` |
-| Deadlock Avoidance | Banker's Algorithm |
-| CPU Scheduling | FCFS, Round Robin, Priority |
+### 4.1 Development Environment
+
+- Programming Language: C
+- Operating System: Linux / Ubuntu
+- Compiler: GCC (GNU Compiler Collection)
+- Build System: GNU Make
+
+### 4.2 Operating System Concepts
+
+**Process Management**
+- Process creation using `fork()`.
+- Child process synchronization and termination handling using `waitpid()`.
+
+**CPU Scheduling**
+- First Come First Serve (FCFS).
+- Round Robin (RR).
+- Priority Scheduling.
+
+**Thread Management and Synchronization**
+- POSIX Threads (Pthreads).
+- Mutex Locks.
+- Condition Variables.
+- Producer-Consumer Synchronization.
+
+**Inter-Process Communication (IPC)**
+- POSIX Shared Memory.
+- POSIX Named Semaphores.
+- Parent-Child Process Communication.
+
+**Deadlock Avoidance**
+- Banker's Algorithm.
+- Safe-State Detection.
+- Safe Sequence Calculation.
+
+**Resource Management**
+- POSIX `setrlimit()` system call.
+- Process Resource Restrictions.
+
+### 4.3 System Calls and POSIX Interfaces
+
+The project uses the following system calls and POSIX interfaces:
+
+- `fork()` – Creates a child process.
+- `waitpid()` – Waits for a child process to terminate.
+- `pthread_create()` – Creates a new thread.
+- `pthread_mutex_lock()` – Acquires a mutex lock.
+- `pthread_cond_wait()` – Waits on a condition variable.
+- `shm_open()` – Creates or opens a shared memory object.
+- `ftruncate()` – Sets the size of a shared memory object.
+- `mmap()` – Maps shared memory into a process address space.
+- `sem_open()` – Creates or opens a named semaphore.
+- `sem_wait()` – Decrements or waits on a semaphore.
+- `sem_post()` – Increments a semaphore.
+- `setrlimit()` – Sets process resource limits.
 
 ## 5. System Requirements
 
-### Hardware Requirements
-
+**Hardware Requirements**
 - A computer capable of running Linux or an Ubuntu virtual machine.
-- Minimum 2 GB RAM recommended.
-- Sufficient storage for the project files and generated log files.
+- At least 2 GB RAM recommended.
+- Sufficient storage for project files and generated logs.
 
-### Software Requirements
-
+**Software Requirements**
 - Ubuntu 24.04 or another compatible Linux distribution.
 - GCC compiler.
 - GNU Make.
-- POSIX-compatible operating system environment.
+- POSIX-compatible environment.
 - Terminal or command-line interface.
 
-### Required Development Tools
+**Installing Required Packages**
 
-Install the required packages on Ubuntu using:
+Install the development tools using Ubuntu's package manager:
 
-```bash
 sudo apt update
+
 sudo apt install build-essential gcc make
-```
 
-The `build-essential` package provides the standard development tools required for compiling C programs.
+Verify the installation:
 
-Verify the installations:
-
-```bash
 gcc --version
+
 make --version
-```
 
 ## 6. Project Directory Structure
 
-```text
 CampusCompute/
-│
-├── source/
-│   ├── main.c
-│   │
-│   ├── job.c
-│   ├── job.h
-│   │
-│   ├── scheduler.c
-│   ├── scheduler.h
-│   │
-│   ├── banker.c
-│   ├── banker.h
-│   │
-│   ├── worker.c
-│   ├── worker.h
-│   │
-│   ├── resource_limits.c
-│   ├── resource_limits.h
-│   │
-│   ├── logger.c
-│   ├── logger.h
-│   │
-│   ├── ipc.c
-│   └── ipc.h
-│
-├── Makefile
-├── README.md
-│
-├── screenshots/
-│
-└── report/
-```
+|
+|-- source/
+|   |-- main.c
+|   |-- job.c
+|   |-- job.h
+|   |-- scheduler.c
+|   |-- scheduler.h
+|   |-- banker.c
+|   |-- banker.h
+|   |-- worker.c
+|   |-- worker.h
+|   |-- resource_limits.c
+|   |-- resource_limits.h
+|   |-- logger.c
+|   |-- logger.h
+|   |-- ipc.c
+|   |-- ipc.h
+|
+|-- Makefile
+|-- README.md
+|-- screenshots/
+|-- report/
 
-### Directory Description
+**Directory Description**
 
-- `source/` – Contains all C implementation files and their corresponding header files.
-- `Makefile` – Contains compilation and linking instructions.
-- `README.md` – Provides project documentation and execution instructions.
-- `screenshots/` – Stores screenshots demonstrating project execution.
-- `report/` – Stores the project submission documentation, if required.
+- source/ – Contains all C source files and their corresponding header files.
+- Makefile – Contains compilation and linking instructions.
+- README.md – Contains project documentation and usage instructions.
+- screenshots/ – Stores screenshots of project execution.
+- report/ – Stores submission documentation, if required.
 
-## 7. Compilation Instructions
+## 7. Compilation and Execution
 
-CampusCompute uses a Makefile to automate compilation and linking.
+CampusCompute uses GNU Make to automate the compilation and linking process.
 
-### Step 1: Open the Project Directory
+**Step 1: Navigate to the Project Directory**
 
-Open the terminal and navigate to the project root directory:
+Open the Ubuntu terminal and navigate to the CampusCompute directory.
 
-```bash
 cd ~/OS_Project/CampusCompute
-```
 
-Ensure that the Makefile is present in this directory.
+**Step 2: Compile the Project**
 
-### Step 2: Compile the Project
+Run the following command:
 
-Run:
-
-```bash
 make
-```
 
 The Makefile performs the following operations:
 
-1. Compiles each C source file into its corresponding object file (`.o`).
-2. Uses the required compiler flags.
-3. Links all object files together.
-4. Links the POSIX thread library using `-pthread`.
-5. Produces the final executable named `campuscompute`.
+- Compiles individual C source files into object files.
+- Uses GCC with the required compiler flags.
+- Links all object files together.
+- Links the POSIX thread library.
+- Generates the final executable named campuscompute.
 
-The compilation process uses GCC with warning flags such as `-Wall`.
+**Compilation Flow**
 
-### Step 3: Run the Application
+C Source Files (.c)
+        |
+        v
+GCC Compilation
+        |
+        v
+Object Files (.o)
+        |
+        v
+Linking using Makefile
+        |
+        v
+campuscompute Executable
 
-After successful compilation, execute:
+**Step 3: Execute the Application**
 
-```bash
+Run the generated executable:
+
 ./campuscompute
-```
 
-The application displays an interactive menu that allows users to select the required OS functionality.
+The application displays an interactive command-line menu through which users can select and execute different Operating System functionalities.
 
-### Step 4: Clean Generated Files
+**Execution Flow**
+
+Launch Application
+        |
+        v
+Display Main Menu
+        |
+        v
+Select Required Operation
+        |
+        v
+Execute Selected OS Module
+        |
+        v
+Display Results
+        |
+        v
+Return to Main Menu
+
+**Step 4: Clean Generated Files**
 
 To remove generated object files and the executable, run:
 
-```bash
 make clean
-```
 
-This removes:
+This removes the compiled object files and the campuscompute executable without affecting the original source and header files.
 
-- All generated `.o` object files.
-- The `campuscompute` executable.
+## 8. Application Functionalities
 
-The original source and header files remain unchanged.
+The application provides the following menu options:
 
-## 8. Application Usage
+1. FCFS Scheduling
+2. Round Robin Scheduling
+3. Priority Scheduling
+4. Compare All Scheduling Algorithms
+5. Banker's Algorithm
+6. Worker Process – Normal Execution
+7. Worker Process – Simulate Failure
+8. Resource Limit Demonstration
+9. Concurrent Activity Logger
+10. IPC – Shared Memory and Semaphore
+11. Exit
 
-After launching the application, users can select the required operation from the main menu.
+Users can select an option and provide the required inputs to execute the corresponding functionality.
 
-The current menu provides the following options:
+## 9. Testing and Verification
 
-| Option | Functionality |
-|---|---|
-| 1 | FCFS Scheduling |
-| 2 | Round Robin Scheduling |
-| 3 | Priority Scheduling |
-| 4 | Compare All Scheduling Algorithms |
-| 5 | Banker's Algorithm |
-| 6 | Worker Process – Normal Execution |
-| 7 | Worker Process – Simulate Failure |
-| 8 | Resource Limit Demonstration |
-| 9 | Concurrent Activity Logger |
-| 10 | IPC – Shared Memory and Semaphore |
-| 11 | Exit |
+The following functionalities will be verified during final project execution:
 
-Select the corresponding menu number and provide the required input when prompted.
-
-## 9. Compilation and Execution Workflow
-
-The overall build and execution process is:
-
-```text
-        C Source Files
-              |
-              v
-       GCC Compilation
-              |
-              v
-        Object Files (.o)
-              |
-              v
-       Linking using Makefile
-              |
-              v
-      campuscompute Executable
-              |
-              v
-       Run the Application
-              |
-              v
-       Select Menu Operation
-              |
-              v
-      Execute OS Functionality
-```
-
-## 10. Testing and Verification
-
-The following functionalities should be verified during final project execution:
-
-- FCFS scheduling and calculation of scheduling metrics.
-- Round Robin scheduling with different time quanta.
-- Priority scheduling with different job priorities.
-- Comparison of scheduling algorithms.
+- CPU scheduling algorithms and scheduling metrics.
 - Safe and unsafe states using the Banker's Algorithm.
-- Normal worker process execution.
-- Controlled worker process failure.
+- Normal and controlled worker process execution.
 - Process resource limit demonstration.
-- Concurrent logging and synchronization.
+- Concurrent activity logging and thread synchronization.
 - Parent-child communication using shared memory and semaphores.
 - Proper resource cleanup and application termination.
 
-## 11. Expected Learning Outcomes
+## 10. Learning Outcomes
 
 Through this project, the following Operating System concepts are demonstrated:
 
 - Process creation, execution, and termination.
 - CPU scheduling and performance evaluation.
-- Thread creation and concurrent execution.
+- Multithreading and concurrent execution.
 - Mutual exclusion and synchronization.
 - Inter-process communication.
 - Deadlock avoidance and safe-state detection.
 - Process failure handling.
-- Resource allocation and limitation.
-- System calls and POSIX programming.
+- Resource allocation and management.
+- Practical usage of Linux system calls and POSIX interfaces.
 
-## 12. Team Contributions
+## 11. Project Implementation
 
-CampusCompute is developed as a two-member team project.
+CampusCompute is implemented using a modular architecture, with each module responsible for a specific Operating System functionality.
 
-**Person 1 – Job Management and CPU Scheduling**
+The project is organized into the following components:
 
-Responsible for:
-- Job management.
-- FCFS scheduling.
-- Round Robin scheduling.
-- Priority scheduling.
-- Scheduling metrics and algorithm comparison.
-- Main application input handling and integration.
+- **Job Management and CPU Scheduling:** Handles job creation, management, execution order, and scheduling performance metrics.
+- **Banker's Algorithm:** Implements resource allocation safety checks and safe-sequence detection.
+- **Worker Process Management:** Demonstrates process creation, normal execution, termination, and controlled failure handling.
+- **Process Resource Management:** Demonstrates the use of resource limits to control process resource consumption.
+- **Concurrent Activity Logger:** Implements multithreaded logging using POSIX threads, bounded queues, mutex locks, and condition variables.
+- **Inter-Process Communication:** Enables communication and synchronization between processes using POSIX shared memory and named semaphores.
+- **Command-Line Interface:** Provides a menu-driven interface to access and execute the different project functionalities.
 
-**Person 2 – Synchronization, IPC and Resource Management**
+The modular design improves code organization, maintainability, and integration while allowing individual Operating System concepts to be demonstrated independently.
 
-Responsible for:
-- Banker's Algorithm.
-- Worker process management and failure handling.
-- Process resource limits.
-- Concurrent activity logger using POSIX threads.
-- IPC using POSIX shared memory and named semaphores.
-
-Both team members contribute to integration, debugging, documentation, and final project verification.
-
-## 13. Conclusion
+## 12. Conclusion
 
 CampusCompute provides a practical demonstration of essential Operating System concepts through a modular C-based command-line application.
 
-By combining CPU scheduling, process management, synchronization, IPC, deadlock avoidance, and resource management, the project illustrates how different operating system mechanisms work together to manage processes and system resources efficiently.
-
----
+By combining CPU scheduling, process management, synchronization, inter-process communication, deadlock avoidance, and resource management, the project illustrates how different operating system mechanisms work together to manage processes and system resources efficiently.
