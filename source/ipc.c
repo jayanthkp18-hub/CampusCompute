@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,15 +24,15 @@ typedef struct
 
 void ipc_run(void)
 {
-    int shm_fd;
-    SharedData *shared_data;
-    sem_t *semaphore;
-    pid_t pid;
-    int status;
+    int shm_fd = -1;
+    SharedData *shared_data = MAP_FAILED;
+    sem_t *semaphore = SEM_FAILED;
 
-    int child_created = 0;
-    int sem_created = 0;
+    pid_t pid = -1;
+    int status;
     int shm_created = 0;
+    int sem_created = 0;
+    int child_created = 0;
 
     printf("\n========== IPC DEMONSTRATION ==========\n");
 
@@ -43,7 +42,7 @@ void ipc_run(void)
     if (shm_fd == -1)
     {
         perror("shm_open failed (object may already exist)");
-        return;
+        goto cleanup;
     }
 
     shm_created = 1;
@@ -70,36 +69,43 @@ void ipc_run(void)
     if (semaphore == SEM_FAILED)
     {
         perror("sem_open failed");
-        munmap(shared_data, sizeof(SharedData));
         goto cleanup;
     }
 
     sem_created = 1;
 
+    /* Create child process */
     pid = fork();
 
-    if (pid < 0)
+    if (pid == -1)
     {
         perror("fork failed");
-        sem_close(semaphore);
-        munmap(shared_data, sizeof(SharedData));
         goto cleanup;
     }
 
     if (pid == 0)
     {
         /* Child process: receiver */
-
         printf("[Child] Waiting for message...\n");
         fflush(stdout);
 
-        if (sem_wait(semaphore) == -1)
+        int wait_result;
+
+        do
+        {
+            wait_result = sem_wait(semaphore);
+        }
+        while (wait_result == -1 && errno == EINTR);
+
+        if (wait_result == -1)
         {
             perror("[Child] sem_wait failed");
+
             sem_close(semaphore);
             munmap(shared_data, sizeof(SharedData));
             close(shm_fd);
-            exit(EXIT_FAILURE);
+
+            _exit(EXIT_FAILURE);
         }
 
         printf("[Child] Received message: %s\n",
@@ -109,13 +115,12 @@ void ipc_run(void)
         munmap(shared_data, sizeof(SharedData));
         close(shm_fd);
 
-        exit(EXIT_SUCCESS);
+        _exit(EXIT_SUCCESS);
     }
-
-    /* Parent process: sender */
 
     child_created = 1;
 
+    /* Parent process: sender */
     printf("[Parent] Created shared memory and semaphore.\n");
 
     snprintf(shared_data->message, MESSAGE_SIZE,
@@ -129,7 +134,16 @@ void ipc_run(void)
         kill(pid, SIGTERM);
     }
 
-    if (waitpid(pid, &status, 0) == -1)
+    /* Wait for child process */
+    pid_t wait_result;
+
+    do
+    {
+        wait_result = waitpid(pid, &status, 0);
+    }
+    while (wait_result == -1 && errno == EINTR);
+
+    if (wait_result == -1)
     {
         perror("waitpid failed");
     }
@@ -142,23 +156,28 @@ void ipc_run(void)
         printf("[Parent] Child process failed.\n");
     }
 
-    sem_close(semaphore);
-    munmap(shared_data, sizeof(SharedData));
-
 cleanup:
 
-    if (child_created == 0)
+    if (child_created == 0 && pid > 0)
     {
-        /* No child is using these objects */
+        kill(pid, SIGTERM);
+        waitpid(pid, NULL, 0);
     }
 
-    if (sem_created)
-        sem_unlink(SEM_NAME);
+    if (semaphore != SEM_FAILED)
+        sem_close(semaphore);
 
-    if (shm_created)
-        shm_unlink(SHM_NAME);
+    if (shared_data != MAP_FAILED)
+        munmap(shared_data, sizeof(SharedData));
 
-    close(shm_fd);
+    if (shm_fd != -1)
+        close(shm_fd);
+
+    if (sem_created && sem_unlink(SEM_NAME) == -1)
+        perror("sem_unlink failed");
+
+    if (shm_created && shm_unlink(SHM_NAME) == -1)
+        perror("shm_unlink failed");
 
     printf("[IPC] Shared memory and semaphore cleaned up.\n");
     printf("=======================================\n");

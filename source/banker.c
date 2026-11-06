@@ -1,6 +1,31 @@
-
 #include <stdio.h>
 #include "banker.h"
+
+/* Clear the remaining characters from the current input line. */
+static void clear_input_line(void)
+{
+    int ch;
+
+    while ((ch = getchar()) != '\n' && ch != EOF)
+    {
+        /* Discard input */
+    }
+}
+
+/* Read an integer safely. Returns 1 on success, 0 on failure or EOF. */
+static int read_integer(const char *prompt, int *value)
+{
+    printf("%s", prompt);
+
+    if (scanf("%d", value) != 1)
+    {
+        printf("Invalid input. Please enter an integer.\n");
+        clear_input_line();
+        return 0;
+    }
+
+    return 1;
+}
 
 /*
  * Checks whether the current system state is safe.
@@ -25,7 +50,6 @@ int banker_check_safety(
 
     int completed = 0;
 
-    /* Validate dimensions */
     if (processes < 1 || processes > BANKER_MAX_PROCESSES ||
         resources < 1 || resources > BANKER_MAX_RESOURCES)
     {
@@ -57,7 +81,7 @@ int banker_check_safety(
         }
     }
 
-    /* Safety algorithm */
+    /* Banker's Safety Algorithm */
     while (completed < processes)
     {
         int found = 0;
@@ -68,7 +92,6 @@ int banker_check_safety(
             {
                 int can_finish = 1;
 
-                /* Check Need[i] <= Work */
                 for (int j = 0; j < resources; j++)
                 {
                     if (need[i][j] > work[j])
@@ -80,7 +103,6 @@ int banker_check_safety(
 
                 if (can_finish)
                 {
-                    /* Simulate process completion */
                     for (int j = 0; j < resources; j++)
                     {
                         work[j] += allocation[i][j];
@@ -95,19 +117,14 @@ int banker_check_safety(
             }
         }
 
-        /* No unfinished process could proceed */
         if (found == 0)
-        {
             return 0;
-        }
     }
 
     return 1;
 }
 
-/*
- * Interactive interface for testing Banker's Algorithm.
- */
+/* Interactive interface for Banker's Algorithm. */
 void banker_run(void)
 {
     int processes, resources;
@@ -122,37 +139,43 @@ void banker_run(void)
 
     int safe_sequence[BANKER_MAX_PROCESSES];
 
+    char prompt[100];
+
     printf("\n========== BANKER'S ALGORITHM ==========\n");
 
-    printf("Enter number of processes (1-%d): ",
-           BANKER_MAX_PROCESSES);
+    if (!read_integer("Enter number of processes: ", &processes))
+        return;
 
-    if (scanf("%d", &processes) != 1 ||
-        processes < 1 || processes > BANKER_MAX_PROCESSES)
+    if (processes < 1 || processes > BANKER_MAX_PROCESSES)
     {
-        printf("Invalid number of processes.\n");
+        printf("Invalid number of processes. Allowed range: 1-%d.\n",
+               BANKER_MAX_PROCESSES);
         return;
     }
 
-    printf("Enter number of resource types (1-%d): ",
-           BANKER_MAX_RESOURCES);
+    if (!read_integer("Enter number of resource types: ", &resources))
+        return;
 
-    if (scanf("%d", &resources) != 1 ||
-        resources < 1 || resources > BANKER_MAX_RESOURCES)
+    if (resources < 1 || resources > BANKER_MAX_RESOURCES)
     {
-        printf("Invalid number of resource types.\n");
+        printf("Invalid number of resource types. Allowed range: 1-%d.\n",
+               BANKER_MAX_RESOURCES);
         return;
     }
 
     /* Read Available resources */
-    printf("\nEnter Available resources (%d values):\n", resources);
+    printf("\nEnter Available resources:\n");
 
     for (int j = 0; j < resources; j++)
     {
-        if (scanf("%d", &available[j]) != 1 ||
-            available[j] < 0)
+        snprintf(prompt, sizeof(prompt), "Available[%d]: ", j);
+
+        if (!read_integer(prompt, &available[j]))
+            return;
+
+        if (available[j] < 0)
         {
-            printf("Invalid Available resource value.\n");
+            printf("Available resources cannot be negative.\n");
             return;
         }
     }
@@ -162,14 +185,19 @@ void banker_run(void)
 
     for (int i = 0; i < processes; i++)
     {
-        printf("P%d: ", i);
+        printf("Process P%d:\n", i);
 
         for (int j = 0; j < resources; j++)
         {
-            if (scanf("%d", &allocation[i][j]) != 1 ||
-                allocation[i][j] < 0)
+            snprintf(prompt, sizeof(prompt),
+                     "Allocation[P%d][R%d]: ", i, j);
+
+            if (!read_integer(prompt, &allocation[i][j]))
+                return;
+
+            if (allocation[i][j] < 0)
             {
-                printf("Invalid Allocation value.\n");
+                printf("Allocation values cannot be negative.\n");
                 return;
             }
         }
@@ -180,15 +208,19 @@ void banker_run(void)
 
     for (int i = 0; i < processes; i++)
     {
-        printf("P%d: ", i);
+        printf("Process P%d:\n", i);
 
         for (int j = 0; j < resources; j++)
         {
-            if (scanf("%d", &maximum[i][j]) != 1 ||
-                maximum[i][j] < allocation[i][j])
+            snprintf(prompt, sizeof(prompt),
+                     "Maximum[P%d][R%d]: ", i, j);
+
+            if (!read_integer(prompt, &maximum[i][j]))
+                return;
+
+            if (maximum[i][j] < allocation[i][j])
             {
-                printf("Invalid Maximum value. "
-                       "Maximum must be >= Allocation.\n");
+                printf("Maximum cannot be less than Allocation.\n");
                 return;
             }
         }
@@ -222,7 +254,6 @@ void banker_run(void)
     if (result == 1)
     {
         printf("\nSystem is in a SAFE state.\n");
-
         printf("Safe sequence: ");
 
         for (int i = 0; i < processes; i++)

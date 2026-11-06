@@ -1,23 +1,17 @@
-
 #ifndef JOB_H
 #define JOB_H
 
 #define MAX_JOBS 100
 
-typedef enum {
+typedef enum
+{
     WAITING,
     RUNNING,
     COMPLETED
 } JobStatus;
 
-/*using the enum values for job status:
-    WAITING = 0
-    RUNNING = 1
-    COMPLETED = 2
-    FAILED = 3
-*/
-
-typedef struct {
+typedef struct
+{
     int job_id;
     int arrival_time;
     int burst_time;
