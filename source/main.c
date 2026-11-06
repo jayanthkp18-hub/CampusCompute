@@ -6,8 +6,14 @@
 
 #include "job.h"
 #include "scheduler.h"
+#include "banker.h"
+#include "worker.h"
+#include "resource_limits.h"
+#include "logger.h"
+#include "ipc.h"
 
-int read_integer(const char *message)
+/* Returns 1 when an integer is read, 0 when input reaches EOF. */
+int read_integer(const char *message, int *result)
 {
     char input[100];
     char *end;
@@ -16,13 +22,10 @@ int read_integer(const char *message)
     while (1)
     {
         printf("%s", message);
+        fflush(stdout);
 
         if (fgets(input, sizeof(input), stdin) == NULL)
-        {
-            printf("Input error. Try again.\n");
-            clearerr(stdin);
-            continue;
-        }
+            return 0;
 
         errno = 0;
         value = strtol(input, &end, 10);
@@ -44,71 +47,130 @@ int read_integer(const char *message)
             continue;
         }
 
-        return (int)value;
+        *result = (int)value;
+        return 1;
     }
 }
 
-int main()
+/* Clear any remaining characters after scanf-based input. */
+void discard_input_line(void)
+{
+    int ch;
+
+    while ((ch = getchar()) != '\n' && ch != EOF)
+    {
+        /* Discard remaining input */
+    }
+}
+
+int main(void)
 {
     Job jobs[MAX_JOBS];
     int n;
 
-    printf("===== CampusCompute =====\n\n");
+    printf("========================================\n");
+    printf("          CAMPUSCOMPUTE\n");
+    printf(" Intelligent Job Scheduling and Resource Management\n");
+    printf("========================================\n");
 
-    do {
-        n = read_integer("Enter number of jobs (1-100): ");
+    /* Read number of jobs */
+    while (1)
+    {
+        if (!read_integer("\nEnter number of jobs (1-100): ", &n))
+        {
+            printf("\nInput ended. Exiting CampusCompute.\n");
+            return 0;
+        }
 
-        if (n < 1 || n > MAX_JOBS)
-            printf("Number of jobs must be between 1 and 100.\n");
+        if (n >= 1 && n <= MAX_JOBS)
+            break;
 
-    } while (n < 1 || n > MAX_JOBS);
+        printf("Number of jobs must be between 1 and %d.\n", MAX_JOBS);
+    }
 
+    /* Read job details */
     for (int i = 0; i < n; i++)
     {
         int arrival, burst, priority;
 
         printf("\nEnter details for Job %d:\n", i + 1);
 
-        do {
-            arrival = read_integer("Arrival Time: ");
-            if (arrival < 0)
-                printf("Arrival time cannot be negative.\n");
-        } while (arrival < 0);
+        while (1)
+        {
+            if (!read_integer("Arrival Time: ", &arrival))
+            {
+                printf("\nInput ended. Exiting CampusCompute.\n");
+                return 0;
+            }
 
-        do {
-            burst = read_integer("CPU Burst Time: ");
-            if (burst <= 0)
-                printf("Burst time must be positive.\n");
-        } while (burst <= 0);
+            if (arrival >= 0)
+                break;
 
-        do {
-            priority = read_integer("Priority: ");
-            if (priority <= 0)
-                printf("Priority must be positive.\n");
-        } while (priority <= 0);
+            printf("Arrival time cannot be negative.\n");
+        }
 
-        initialize_job(&jobs[i], i + 1,
-                       arrival, burst, priority);   
+        while (1)
+        {
+            if (!read_integer("CPU Burst Time: ", &burst))
+            {
+                printf("\nInput ended. Exiting CampusCompute.\n");
+                return 0;
+            }
+
+            if (burst > 0)
+                break;
+
+            printf("Burst time must be positive.\n");
+        }
+
+        while (1)
+        {
+            if (!read_integer("Priority: ", &priority))
+            {
+                printf("\nInput ended. Exiting CampusCompute.\n");
+                return 0;
+            }
+
+            if (priority > 0)
+                break;
+
+            printf("Priority must be positive.\n");
+        }
+
+        initialize_job(&jobs[i], i + 1, arrival, burst, priority);
     }
 
     int choice;
 
     do
     {
-        printf("\n===== CAMPUSCOMPUTE MENU =====\n");
-        printf("1. FCFS Scheduling\n");
-        printf("2. Round Robin Scheduling\n");
-        printf("3. Priority Scheduling\n");
-        printf("4. Compare All Algorithms\n");
-        printf("5. Exit\n");
+        printf("\n========== CAMPUSCOMPUTE MENU ==========\n");
+        printf("1.  FCFS Scheduling\n");
+        printf("2.  Round Robin Scheduling\n");
+        printf("3.  Priority Scheduling\n");
+        printf("4.  Compare All Scheduling Algorithms\n");
+        printf("----------------------------------------\n");
+        printf("5.  Banker's Algorithm\n");
+        printf("6.  Worker Process - Normal Execution\n");
+        printf("7.  Worker Process - Simulate Failure\n");
+        printf("8.  Resource Limit Demonstration\n");
+        printf("9.  Concurrent Activity Logger\n");
+        printf("10. IPC - Shared Memory and Semaphore\n");
+        printf("----------------------------------------\n");
+        printf("11. Exit\n");
+        printf("========================================\n");
 
-        choice = read_integer("\nEnter your choice: ");
+        if (!read_integer("\nEnter your choice: ", &choice))
+        {
+            printf("\nInput ended. Exiting CampusCompute.\n");
+            break;
+        }
 
+        /* Fresh copies for scheduling algorithms */
         Job fcfs_jobs[MAX_JOBS];
         Job rr_jobs[MAX_JOBS];
         Job priority_jobs[MAX_JOBS];
 
-        // Create fresh copies
         for (int i = 0; i < n; i++)
         {
             fcfs_jobs[i] = jobs[i];
@@ -126,14 +188,19 @@ int main()
             {
                 int quantum;
 
-                do
+                while (1)
                 {
-                    quantum = read_integer("Enter Time Quantum: ");
+                    if (!read_integer("Enter Time Quantum: ", &quantum))
+                    {
+                        printf("\nInput ended. Exiting CampusCompute.\n");
+                        return 0;
+                    }
 
-                    if (quantum <= 0)
-                        printf("Time Quantum must be positive.\n");
+                    if (quantum > 0)
+                        break;
 
-                } while (quantum <= 0);
+                    printf("Time Quantum must be positive.\n");
+                }
 
                 round_robin_scheduling(rr_jobs, n, quantum);
                 break;
@@ -145,6 +212,7 @@ int main()
 
             case 4:
             {
+                /* Comparison uses a fixed Round Robin quantum of 2 */
                 fcfs_scheduling(fcfs_jobs, n);
                 round_robin_scheduling(rr_jobs, n, 2);
                 priority_scheduling(priority_jobs, n);
@@ -184,14 +252,39 @@ int main()
             }
 
             case 5:
+                banker_run();
+                discard_input_line();
+                break;
+
+            case 6:
+                worker_run(0);
+                break;
+
+            case 7:
+                worker_run(1);
+                break;
+
+            case 8:
+                resource_limits_run();
+                break;
+
+            case 9:
+                logger_run();
+                break;
+
+            case 10:
+                ipc_run();
+                break;
+
+            case 11:
                 printf("\nExiting CampusCompute. Goodbye!\n");
                 break;
 
             default:
-                printf("\nInvalid choice! Please select 1-5.\n");
+                printf("\nInvalid choice! Please select 1-11.\n");
         }
 
-    } while (choice != 5);
+    } while (choice != 11);
 
     return 0;
 }
