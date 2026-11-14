@@ -3,7 +3,6 @@
 
 #include "job.h"
 
-
 typedef struct {
     float average_waiting_time;
     float average_turnaround_time;
