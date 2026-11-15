@@ -187,3 +187,29 @@ CampusCompute demonstrates essential Operating System mechanisms through a modul
 
 ---
 
+---
+
+## Implementation Notes
+
+- The project follows a modular architecture, separating CPU scheduling, process management, resource management, synchronization, and IPC functionalities.
+- Each module is implemented independently and integrated through the main application interface.
+- The CPU scheduling comparison uses a default Round Robin time quantum of **2 time units**.
+- POSIX threads, shared memory, and named semaphores are used for concurrency and inter-process communication.
+- The application is designed for Linux-based environments and uses POSIX system interfaces.
+
+## Resource Cleanup and Termination
+
+CampusCompute follows controlled termination and resource cleanup practices.
+
+- Worker processes are terminated and their exit statuses are handled by the parent process.
+- Shared memory segments are detached and removed when no longer required.
+- Named semaphores are closed and unlinked during cleanup.
+- Logging threads are properly synchronized before application termination.
+- Generated object files and executables can be removed using `make clean`.
+
+## Contributors
+
+This project was developed collaboratively as part of the Operating Systems mini-project.
+
+Each team member was responsible for implementing and testing specific modules, which were integrated into the final application.
+
