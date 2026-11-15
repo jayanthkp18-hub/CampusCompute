@@ -1,0 +1,16 @@
+
+# Object files
+*.o
+
+# Compiled executable
+campuscompute
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+*~
+
+# VS Code settings
+.vscode/
